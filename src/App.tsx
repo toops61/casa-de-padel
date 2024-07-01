@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PlayersForm from "./components/PlayersForm";
-import { usePlayers } from "./utils/hooks";
+import { usePlayersZustand } from "./store";
 
 function App() {
   const [enter, setEnter] = useState(false);
 
-  usePlayers();
+  const { players } = usePlayersZustand();
+
+  useEffect(() => {
+    console.log(players);
+  }, [players])
+  
 
   return (
     <main className="App">
