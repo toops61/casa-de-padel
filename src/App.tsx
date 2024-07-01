@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PlayersForm from "./components/PlayersForm";
 import { usePlayersZustand } from "./store";
+import PlayersIcons from "./components/PlayersIcons";
 
 function App() {
   const [enter, setEnter] = useState(false);
@@ -22,6 +23,10 @@ function App() {
       </div> : <div className="main-container">
         <div className="back" onClick={() => setEnter(!enter)}></div>
         <PlayersForm />
+        {players.length ? <>  
+        <PlayersIcons />
+        <h3>Créer les équipes</h3>
+        </> : <></>}
       </div>}
     </main>
   )

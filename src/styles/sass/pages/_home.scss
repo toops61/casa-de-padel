@@ -10,3 +10,21 @@
     @include flexColumn;
     padding-top: 2em;
 }
+
+.players-container {
+    border: solid;
+    border-radius: 1em;
+    padding: 1em;
+    margin: 1em 0;
+    display: flex;
+    align-items: center;
+
+}
+
+.player-container {
+    margin: 0 1em;
+    @include flexColumn;
+    .icon::before {
+        @include icon('\f007',2em);
+    }
+}
