@@ -1,0 +1,40 @@
+.players-form {
+    @include flexColumn;
+    width: 100%;
+    h2 {
+        font-size: 2em;
+        margin-bottom: 1em;
+    }
+}
+
+.inputs-container {
+    @include flexCenter;
+    width: 100%;
+    label {
+        margin: .5em 0;
+    }
+}
+
+.players-input {
+    margin-right: 2em;
+    display: flex;
+    flex-direction: column;
+    select {
+        color: black;
+    }
+}
+
+.new-player-input {
+    display: flex;
+    flex-direction: column;
+    input {
+        width: 90%;
+        margin-right: .5em;
+    }
+    .add {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
