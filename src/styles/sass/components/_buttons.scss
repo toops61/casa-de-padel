@@ -1,10 +1,22 @@
+button {
+    cursor: pointer;
+    background-color: black;
+    color: #fff;
+    border: solid .15em;
+    border-radius: 1em;
+    padding: .1em 1em .2em;
+    font-size: 1em;
+    @include flexCenter;
+}
+
 .back {
     z-index: 99;
     position: absolute;
-    width: 30px;
-    height: 30px;
     top: .5em;
     left: .5em;
+    border: none;
+    border-radius: 0;
+    padding: 0;
     &::before {
         @include icon('\f3e5',2em);
         @include tablette-version {
@@ -22,15 +34,11 @@
     right: 2em;
 }
 
-button {
-    cursor: pointer;
-    background-color: black;
-    color: #fff;
-    border: solid .15em;
-    border-radius: 1em;
-    padding: .1em 1em .2em;
-    font-size: 1.2em;
-    @include flexCenter;
+.reset {
+    position:absolute;
+    top: 1em;
+    right: 1em;
+    font-size: 1em;
 }
 
 .color-button {

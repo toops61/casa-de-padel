@@ -28,3 +28,31 @@
         @include icon('\f007',2em);
     }
 }
+
+.create-teams {
+    @include flexCenter;
+    button {
+        margin: 0 .5em;
+    }
+}
+
+.fields-container {
+    display: flex;
+}
+
+.field {
+    @include flexColumn;
+    margin: 1em;
+    border-radius: .5em;
+    border: solid;
+    .part {
+        width: 10em;
+        height: 8em;
+        border: red;
+        display: flex;
+        justify-content: space-around;
+        &:first-child {
+            border-bottom: solid;
+        }
+    }
+}

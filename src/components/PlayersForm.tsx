@@ -1,4 +1,4 @@
-import { usePlayersZustand } from "../store";
+import { useModal, usePlayersZustand } from "../store";
 import { nanoid } from "nanoid";
 import { playersData } from "../utils/data";
 import { ChangeEvent } from "react";
@@ -6,6 +6,7 @@ import { ChangeEvent } from "react";
 export default function PlayersForm() {
     const playersDB = playersData.map(player => ({name:player,id:nanoid()})).sort((a,b) => a.name < b.name ? -1 : 1);
 
+    const { showModal } = useModal();
     const { players,addPlayer } = usePlayersZustand();
 
     const selectPlayer = (e:ChangeEvent<HTMLSelectElement>) => {
@@ -17,6 +18,8 @@ export default function PlayersForm() {
         e.preventDefault();
         const newPlayer = e.target.newPlayer.value;
         addPlayer(newPlayer);
+        e.target.newPlayer.value = '';
+        showModal('Nouveau joueur créé');
     }
 
   return (
@@ -24,8 +27,9 @@ export default function PlayersForm() {
         <h2>Joueurs</h2>
         <div className="inputs-container">
             <div className="players-input">
-                <label htmlFor="players">Sélectionnez les joueurs</label>
+                <label htmlFor="players">Joueurs</label>
                 <select name="players" onChange={selectPlayer}>
+                    <option value="">Sélectionnez les joueurs</option>
                     {playersDB.filter(e => !players.some(el => el.name === e.name)).map(player => <option value={player.name} key={player.id}>{player.name}</option>)}
                 </select>
             </div>

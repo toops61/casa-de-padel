@@ -1,31 +1,41 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PlayersForm from "./components/PlayersForm";
-import { usePlayersZustand } from "./store";
+import { useFieldsZustand, useModal, usePlayersZustand } from "./store";
 import PlayersIcons from "./components/PlayersIcons";
+import FieldsPart from "./components/FieldsPart";
+import Modal from "./components/Modal";
+import Popup from "./components/Popup";
 
 function App() {
   const [enter, setEnter] = useState(false);
 
-  const { players } = usePlayersZustand();
+  const { players,resetPlayers } = usePlayersZustand();
+  const { resetFields } = useFieldsZustand();
+  const { modalObject,showModal } = useModal();
 
-  useEffect(() => {
-    console.log(players);
-  }, [players])
-  
+  const resetFunc = () => {
+    resetPlayers();
+    resetFields();
+  } 
 
   return (
     <main className="App">
+      {modalObject.show && modalObject.type === 'modal' ? <Modal /> : <></>}
+      {modalObject.show && modalObject.type === 'popup' ? <Popup /> : <></>}
       {!enter ?  <div className="open-container">
         <h1>Padel Seipra</h1>
         <button className="enter-btn" onClick={() => setEnter(!enter)}>
           <p>Entrez</p>
         </button>
       </div> : <div className="main-container">
-        <div className="back" onClick={() => setEnter(!enter)}></div>
+        <button className="back" onClick={() => setEnter(!enter)}></button>
+        <button className="reset" onClick={resetFunc}>Initialiser</button>
         <PlayersForm />
         {players.length ? <>  
         <PlayersIcons />
-        <h3>Créer les équipes</h3>
+        {players.length > 1 ? 
+          <FieldsPart /> : <></>
+        }
         </> : <></>}
       </div>}
     </main>
