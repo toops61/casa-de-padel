@@ -9,15 +9,15 @@ import Popup from "./components/Popup";
 function App() {
   const [enter, setEnter] = useState(false);
 
-  const { players,resetPlayers } = usePlayersZustand();
+  const { players,playersPlaced,resetPlayers } = usePlayersZustand();
   const { resetFields } = useFieldsZustand();
-  const { modalObject,showModal } = useModal();
+  const { modalObject } = useModal();
 
   const resetFunc = () => {
     resetPlayers();
     resetFields();
-  } 
-
+  }
+  
   return (
     <main className="App">
       {modalObject.show && modalObject.type === 'modal' ? <Modal /> : <></>}
@@ -31,12 +31,11 @@ function App() {
         <button className="back" onClick={() => setEnter(!enter)}></button>
         <button className="reset" onClick={resetFunc}>Initialiser</button>
         <PlayersForm />
-        {players.length ? <>  
-        <PlayersIcons />
-        {players.length > 1 ? 
+          
+        {players.filter(player=>!playersPlaced.includes(player.id)).length ? <PlayersIcons /> : <></>}
+        {players.length > 1 || playersPlaced.length ? 
           <FieldsPart /> : <></>
         }
-        </> : <></>}
       </div>}
     </main>
   )

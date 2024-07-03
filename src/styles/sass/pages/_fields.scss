@@ -1,0 +1,37 @@
+.create-fields {
+    margin-top: 1em;
+    @include flexCenter;
+    button {
+        margin: 0 .5em;
+    }
+}
+
+.fields-container {
+    margin-top: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.field {
+    @include flexColumn;
+    margin: 1em;
+    border-radius: .5em;
+    border: solid;
+    .part {
+        width: 10em;
+        height: 8em;
+        border: red;
+        display: flex;
+        justify-content: center;
+        &:first-child {
+            border-bottom: solid;
+        }
+    }
+    .player-container {
+        margin: 1em .4em;
+        &:nth-child(2) {
+            margin-top: 3em;
+        }
+    }
+}

@@ -3,11 +3,11 @@ import Player from "./Player";
 
 export default function PlayersIcons() {
 
-    const { players } = usePlayersZustand();
+    const { players,playersPlaced } = usePlayersZustand();
 
   return (
     <div className="players-container">
-        {players.map(player => <Player player={player} key={player.id} />)}
+        {players.filter(player => !playersPlaced.includes(player.id)).map(player => <Player player={player} key={player.id} />)}
     </div>
   )
 }

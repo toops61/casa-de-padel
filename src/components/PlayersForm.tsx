@@ -7,7 +7,7 @@ export default function PlayersForm() {
     const playersDB = playersData.map(player => ({name:player,id:nanoid()})).sort((a,b) => a.name < b.name ? -1 : 1);
 
     const { showModal } = useModal();
-    const { players,addPlayer } = usePlayersZustand();
+    const { players,playersPlaced,addPlayer } = usePlayersZustand();
 
     const selectPlayer = (e:ChangeEvent<HTMLSelectElement>) => {
         const newSelected = e.target.value;
@@ -30,7 +30,7 @@ export default function PlayersForm() {
                 <label htmlFor="players">Joueurs</label>
                 <select name="players" onChange={selectPlayer}>
                     <option value="">Sélectionnez les joueurs</option>
-                    {playersDB.filter(e => !players.some(el => el.name === e.name)).map(player => <option value={player.name} key={player.id}>{player.name}</option>)}
+                    {playersDB.filter(e => !players.some(el => el.name === e.name) && !playersPlaced.some(el => el === e.id)).map(player => <option value={player.name} key={player.id}>{player.name}</option>)}
                 </select>
             </div>
             <div className="new-player-input">

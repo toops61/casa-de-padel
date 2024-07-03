@@ -10,16 +10,24 @@ export interface playersType {
 
 interface playerHandleType {
   players: playersType[];
+  playersPlaced: IDType[];
   addPlayer: (player: string) => void;
+  addPlayerPlaced: (playersIdArray:IDType[]) => void;
   removePlayer: (playerId: IDType) => void;
   resetPlayers: () => void;
 }
 
 export const usePlayersZustand = create<playerHandleType>(set => ({
   players: [],
+  playersPlaced: [],
   addPlayer: player => set(state =>({ players: [...state.players, {name:player,id:nanoid()}].sort() })),
+  addPlayerPlaced: array => set(state => {
+    const previous = [...state.playersPlaced];
+    array.map(e => !previous.includes(e) && previous.push(e));
+    return {playersPlaced:previous}
+  }), 
   removePlayer: playerId => set(state => ({ players: state.players.filter((e) => e.id !== playerId) })),
-  resetPlayers: () => set(({players:[]}))
+  resetPlayers: () => set(({players:[],playersPlaced:[]}))
 }));
 
 //HANDLE FIELDS
@@ -32,22 +40,22 @@ export interface fieldType {
 interface fieldHandleType {
   fields: fieldType[];
   addFields: (fields:fieldType[]) => void;
-  updateFieldPlayers: (playersIds1:IDType[],playersIds2:IDType[],fieldID:IDType) => void;
+  updateFieldPlayers: (playersIds:IDType[],fieldID:IDType) => void;
   resetFields: () => void;
 }
 
 export const useFieldsZustand = create<fieldHandleType>(set => ({
   fields: [],
-  addFields: fieldsArray => set(state => {
-    const newArray = state.fields.concat(fieldsArray);
-    return {fields:newArray}
+  addFields: fieldsArray => set(() => {
+    //const newArray = state.fields.concat(fieldsArray);
+    return {fields:fieldsArray}
   }),
-  updateFieldPlayers: (playersIds1,playersIds2,fieldID) => {
+  updateFieldPlayers: (playersIds,fieldID) => {
     set(state => {
       const fieldsArray = state.fields;
-      const arrayId = state.fields.findIndex(field => field.id === fieldID);
+      const arrayId = state.fields.findIndex(field => field.id === fieldID);      
       if (arrayId !== -1) {
-        fieldsArray.splice(arrayId,1,{...fieldsArray[arrayId],players_side1:playersIds1,players_side2:playersIds2});
+        fieldsArray[arrayId].players_side1.length ? fieldsArray.splice(arrayId,1,{...fieldsArray[arrayId],players_side2:playersIds}) : fieldsArray.splice(arrayId,1,{...fieldsArray[arrayId],players_side1:playersIds});
         //set({ columns: columnsArray });
       }
       return { fields: fieldsArray };
