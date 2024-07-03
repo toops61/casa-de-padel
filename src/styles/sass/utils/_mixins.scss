@@ -18,7 +18,7 @@
     text-shadow: 2px 2px 4px black;
 }
 
-@mixin btn-shadow ($offsetX: 2px, $offsetY: 2px, $blur: 14px, $color: black)  {
+@mixin btn-shadow ($offsetX: .1em, $offsetY: .1em, $blur: .3em, $color: white)  {
     box-shadow: $offsetX $offsetY $blur $color;
 }
 

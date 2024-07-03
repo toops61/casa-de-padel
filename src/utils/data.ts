@@ -12,5 +12,7 @@ export const playersData = [
     "Corentin R",
     "Corentin P",
     "Aurélien",
-    "Marie"
+    "Marie",
+    "Nicolas P",
+    "Florent"
 ]

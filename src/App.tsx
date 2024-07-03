@@ -28,7 +28,7 @@ function App() {
           <p>Entrez</p>
         </button>
       </div> : <div className="main-container">
-        <button className="back" onClick={() => setEnter(!enter)}></button>
+        <button className="back icon" onClick={() => setEnter(!enter)}></button>
         <button className="reset" onClick={resetFunc}>Initialiser</button>
         <PlayersForm />
           

@@ -16,10 +16,15 @@ export default function PlayersForm() {
 
     const addNewPlayer = (e:ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const newPlayer = e.target.newPlayer.value;
-        addPlayer(newPlayer);
+        const newPlayer = e.target.newPlayer.value.trim();
+        if (newPlayer && !players.some(player => player.name === newPlayer)) {
+            addPlayer(newPlayer);
+            showModal('Nouveau joueur créé','');
+        } else {
+            const response = newPlayer ? `Il existe déjà un joueur ${newPlayer}` : 'Il faut donner un nom au joueur...'
+            showModal(response);
+        }
         e.target.newPlayer.value = '';
-        showModal('Nouveau joueur créé');
     }
 
   return (
@@ -37,7 +42,7 @@ export default function PlayersForm() {
                 <label htmlFor="newPlayer">Ajoutez un nouveau joueur</label>
                 <div className="add">
                     <input type="text" name="newPlayer" />
-                    <button className="btn-add" role="submit"></button>
+                    <button className="btn-add icon" role="submit"></button>
                 </div>
             </div>
         </div>
