@@ -1,22 +1,34 @@
-import { useEffect } from "react";
-import { fieldType, useFieldsZustand, useModal, usePlayersZustand } from "../store";
+import { fieldType, useFieldsZustand, useInitialContainer, useModal, usePlayersZustand } from "../store";
 import { nanoid } from "nanoid";
 import { IDType } from "./interfaces";
 import { getRandomArray } from "./utilFuncs";
 
 export const useFields = () => {
     const { players,playersPlaced,addPlayerPlaced } = usePlayersZustand();
+    const { initialPlayers,updateInitial } = useInitialContainer();
     const { fields,addFields,updateField } = useFieldsZustand();
     const { showModal } = useModal();
 
     class Field {
       constructor(public id:IDType,public players_side1:IDType[],public players_side2:IDType[]) {}
     }
+
+    const updatePlayerPlaced = (tempFields:fieldType[]) => {
+      let tempInitial = [...initialPlayers];
+            
+      tempFields.map(field => {
+        addPlayerPlaced(field.players_side1);
+        addPlayerPlaced(field.players_side2);
+        const fieldPlayersIds = [...field.players_side1].concat(field.players_side2);
+        tempInitial = tempInitial.filter(player => !fieldPlayersIds.includes(player.id));
+      })
+      updateInitial(tempInitial);
+    }
     
     const createFields = (start:boolean=true) => {
       const playersToAdd = players.length - (start ? 0 : playersPlaced.length);
       const fieldsNumber = Math.ceil(playersToAdd/4);
-      const rest = playersToAdd%4;
+      const rest = (players.length)%4;
       const arrayFields : fieldType[] = [];
       if (!rest) {
         showModal(`création ${fieldsNumber > 1 ? 'de ' : 'd\''}${fieldsNumber} terrain${fieldsNumber > 1 ? 's' : ''}`,'');
@@ -38,7 +50,7 @@ export const useFields = () => {
 
       //fill 1 field
       if (arrayFields.length === 1 && !arrayFields[0].players_side1.length && !arrayFields[0].players_side2.length) {
-        playersTemp = playersTemp.filter(player => !playersPlaced.includes(player.id));
+        playersTemp = [...initialPlayers];
       }
 
       //redistribute all fields with same players
@@ -49,9 +61,10 @@ export const useFields = () => {
       const tempFields : fieldType[] = arrayFields.map(e => ({...e,players_side1:[],players_side2:[]}));
       if (arrayFields.length === 1 && arrayFields[0].players_side1.length) {
         const ids = arrayFields[0].players_side1.concat(arrayFields[0].players_side2);
-        playersTemp = players.filter(e => ids.includes(e.id));        
+        playersTemp = players.filter(e => ids.includes(e.id));
       }
-      //const playersTemp = arrayFields.length === 1 ? 
+
+      //create random ids array from playersTemp
       const arrayIds = getRandomArray(playersTemp.length);
       let tempArray : IDType[] = [];
       arrayIds.map((e,ind) => {
@@ -63,6 +76,8 @@ export const useFields = () => {
           tempArray = [];
         }
       })
+      //update playerPlaced array and initial players
+      updatePlayerPlaced(tempFields);
       return tempFields;
     }
 
@@ -70,6 +85,8 @@ export const useFields = () => {
       const arrayFields = createFields();
       if (arrayFields) {
         const fieldsFilled = fillFields(arrayFields);
+
+        //update zustand fields
         addFields(fieldsFilled);
       }
     }
@@ -82,6 +99,8 @@ export const useFields = () => {
 
     const redistributeAll = () => {
       const newFields = fillFields(fields);
+
+      //update zustand fields
       addFields(newFields);
     }
 
@@ -93,14 +112,5 @@ export const useFields = () => {
       }
     }
 
-    useEffect(() => {
-      if (fields.length) {
-        fields.map(field => {
-          addPlayerPlaced(field.players_side1);
-          addPlayerPlaced(field.players_side2);
-        })
-      }
-    }, [fields])
-    
     return {autoFill,redistributeAll,redistributeOne,buildFields};
 }

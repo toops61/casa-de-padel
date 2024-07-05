@@ -1,4 +1,4 @@
-import { useModal, usePlayersZustand } from "../store";
+import { useInitialContainer, useModal, usePlayersZustand } from "../store";
 import { nanoid } from "nanoid";
 import { playersData } from "../utils/data";
 import { ChangeEvent } from "react";
@@ -7,18 +7,23 @@ export default function PlayersForm() {
     const playersDB = playersData.map(player => ({name:player,id:nanoid()})).sort((a,b) => a.name < b.name ? -1 : 1);
 
     const { showModal } = useModal();
+    const { initialPlayers,updateInitial } = useInitialContainer();
     const { players,playersPlaced,addPlayer } = usePlayersZustand();
 
     const selectPlayer = (e:ChangeEvent<HTMLSelectElement>) => {
         const newSelected = e.target.value;
-        addPlayer(newSelected);
+        const newPlayer = {name:newSelected,id:nanoid()};
+        addPlayer(newPlayer);
+        updateInitial([...initialPlayers,newPlayer]);
     }
 
     const addNewPlayer = (e:ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const newPlayer = e.target.newPlayer.value.trim();
-        if (newPlayer && !players.some(player => player.name === newPlayer)) {
+        const newSelected = e.target.newPlayer.value.trim();
+        const newPlayer = {name:newSelected,id:nanoid()};
+        if (newPlayer && !players.some(player => player.name === newPlayer.name)) {
             addPlayer(newPlayer);
+            updateInitial([...initialPlayers,newPlayer]);
             showModal('Nouveau joueur créé','');
         } else {
             const response = newPlayer ? `Il existe déjà un joueur ${newPlayer}` : 'Il faut donner un nom au joueur...'

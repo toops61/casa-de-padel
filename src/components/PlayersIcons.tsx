@@ -1,25 +1,35 @@
-import { useFieldsZustand, usePlayersZustand } from "../store";
+import { Droppable } from "react-beautiful-dnd";
+import { useFieldsZustand, useInitialContainer, usePlayersZustand } from "../store";
 import { IDType } from "../utils/interfaces";
 import Player from "./Player";
 
 export default function PlayersIcons() {
 
-  const { players,playersPlaced,removePlayers } = usePlayersZustand();
-
+  const { removePlayers } = usePlayersZustand();
+  const { initialPlayers,resetInitial } = useInitialContainer();
   const { fields,removeFields } = useFieldsZustand();
 
   const resetPlayers = () => {
-    const playersToDelete = players.filter(player => !playersPlaced.includes(player.id)).map(player => player.id);
-    removePlayers(playersToDelete);
+    removePlayers(initialPlayers.map(e => e.id));
     const fieldsToDelete : IDType[] = [];
-    fields.map(field => (field.players_side1.length + field.players_side2.length) < 4 && fieldsToDelete.push(field.id));
+    fields.map(field => !(field.players_side1.length + field.players_side2.length) && fieldsToDelete.push(field.id));
     fieldsToDelete.length && removeFields(fieldsToDelete);
+    resetInitial();
   }
 
   return (
-    <div className="players-container">
-        <button className="reset-players icon" onClick={resetPlayers}></button>
-        {players.filter(player => !playersPlaced.includes(player.id)).map(player => <Player player={player} key={player.id} />)}
-    </div>
+    <Droppable droppableId="initial" direction="horizontal">
+      {((provided) => (
+        <div 
+          className="players-container"
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+        >
+            <button className="reset-players icon" onClick={resetPlayers}></button>
+            {initialPlayers.map((player,index) => <Player player={player} index={index} key={player.id} />)}
+            {provided.placeholder}
+        </div>
+      ))}
+    </Droppable>
   )
 }

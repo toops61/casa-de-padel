@@ -1,4 +1,4 @@
-import { useFieldsZustand, usePlayersZustand } from "../store";
+import { useFieldsZustand, useInitialContainer } from "../store";
 import { useFields } from "../utils/hooks";
 import Field from "./Field";
 
@@ -6,12 +6,12 @@ export default function FieldsPart() {
   const {autoFill,redistributeAll,buildFields} = useFields();
 
   const { fields } = useFieldsZustand();
-  const { players,playersPlaced } = usePlayersZustand();
+  const { initialPlayers } = useInitialContainer();
 
   return (
     <div className="fields-part-container">
       <div className="create-fields">
-        {(players.length - playersPlaced.length) >= 4 ? <>
+        {initialPlayers.length >= 4 ? <>
           <h3>Créer les équipes</h3>
           <button className="color-button" onClick={autoFill}>auto</button>
           <button className="color-button" onClick={buildFields}>Manuel</button>

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { IDType } from './utils/interfaces';
-import { nanoid } from 'nanoid';
 
 //HANDLE PLAYERS
 export interface playersType {
@@ -11,9 +10,10 @@ export interface playersType {
 interface playerHandleType {
   players: playersType[];
   playersPlaced: IDType[];
-  addPlayer: (player: string) => void;
-  addPlayerPlaced: (playersIdArray:IDType[]) => void;
+  addPlayer: (player: playersType) => void;
   removePlayers: (playerId: IDType[]) => void;
+  addPlayerPlaced: (playersIdArray:IDType[]) => void;
+  removePlayerPlaced: (playersIdArray:IDType[]) => void;
   resetPlayers: () => void;
 }
 
@@ -21,20 +21,25 @@ export const usePlayersZustand = create<playerHandleType>(set => ({
   players: sessionStorage.players ? JSON.parse(sessionStorage.getItem('players')!) : [],
   playersPlaced: sessionStorage.playersPlaced ? JSON.parse(sessionStorage.getItem('playersPlaced')!) : [],
   addPlayer: player => set(state =>{
-    const newPlayers = [...state.players, {name:player,id:nanoid()}].sort();
+    const newPlayers = [...state.players,player].sort();
     sessionStorage.setItem('players',JSON.stringify(newPlayers));
     return { players: newPlayers }
-}),
+  }),
+  removePlayers: playerIdArray => set(state => {
+    const newPlayers = state.players.filter(player => !playerIdArray.includes(player.id));
+    sessionStorage.setItem('players',JSON.stringify(newPlayers));
+    return { players: newPlayers }
+  }),
   addPlayerPlaced: array => set(state => {
     const previous = [...state.playersPlaced];
     array.map(e => !previous.includes(e) && previous.push(e));
     sessionStorage.setItem('playersPlaced',JSON.stringify(previous));
     return {playersPlaced:previous}
-  }), 
-  removePlayers: playerIdArray => set(state => {
-    const newPlayers = state.players.filter(player => !playerIdArray.includes(player.id));
-    sessionStorage.setItem('players',JSON.stringify(newPlayers));
-    return { players: newPlayers }
+  }),
+  removePlayerPlaced: array => set(state => {
+    const previous = state.playersPlaced.filter(playerId => !array.includes(playerId));
+    sessionStorage.setItem('playersPlaced',JSON.stringify(previous));
+    return {playersPlaced:previous}
   }),
   resetPlayers: () => set(() => {
     sessionStorage.setItem('players',JSON.stringify([]));
@@ -55,7 +60,6 @@ interface fieldHandleType {
   addFields: (fields:fieldType[]) => void;
   removeFields: (fields:IDType[]) => void;
   updateField: (field:fieldType) => void;
-  updateFieldPlayers: (playersIds:IDType[],fieldID:IDType) => void;
   resetFields: () => void;
 }
 
@@ -83,23 +87,30 @@ export const useFieldsZustand = create<fieldHandleType>(set => ({
     sessionStorage.setItem('fields',JSON.stringify(previousArray));
     return {fields:previousArray};
   }),
-  updateFieldPlayers: (playersIds,fieldID) => {
-    set(state => {
-      const fieldsArray = [...state.fields];
-      const arrayId = fieldsArray.findIndex(field => field.id === fieldID);      
-      if (arrayId !== -1) {
-        fieldsArray[arrayId].players_side1.length ? fieldsArray.splice(arrayId,1,{...fieldsArray[arrayId],players_side2:playersIds}) : fieldsArray.splice(arrayId,1,{...fieldsArray[arrayId],players_side1:playersIds});
-        //set({ columns: columnsArray });
-      }
-      sessionStorage.setItem('fields',JSON.stringify(fieldsArray));
-      return { fields: fieldsArray };
-    })
-  },
   resetFields: () => set(() => {
     sessionStorage.setItem('fields',JSON.stringify([]));
     return {fields:[]};
   })
 }));
+
+//initial container (PlayersIcons)
+interface initialContainerType {
+  initialPlayers: playersType[];
+  updateInitial: (playerIdArray:playersType[]) => void;
+  resetInitial: () => void;
+}
+
+export const useInitialContainer = create<initialContainerType>(set => ({
+  initialPlayers: sessionStorage.initalPlayers ? (JSON.parse(sessionStorage.getItem('initalPlayers')!)) : [],
+  updateInitial: playersArray => set(() => {
+    sessionStorage.setItem('initalPlayers',JSON.stringify(playersArray));
+    return {initialPlayers:playersArray};
+  }),
+  resetInitial: () => set(() => {
+    sessionStorage.setItem('initalPlayers',JSON.stringify([]));
+    return {initialPlayers:[]};
+  }),
+}))
 
 //POPUP and MODAL part
 interface modalType {
