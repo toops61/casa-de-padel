@@ -15,15 +15,17 @@ export const useFields = () => {
 
     //update playerPlaced and initialPlayers
     const updatePlayerPlaced = (tempFields:fieldType[]) => {
-      let tempInitial = [...initialPlayers];
-            
-      tempFields.map(field => {
-        addPlayerPlaced(field.players_side1);
-        addPlayerPlaced(field.players_side2);
-        const fieldPlayersIds = [...field.players_side1].concat(field.players_side2);
-        tempInitial = tempInitial.filter(player => !fieldPlayersIds.includes(player.id));
-      })
-      updateInitial(tempInitial);
+      let newPlayerPlaced : IDType[] = [];
+
+      const previousField = fields.filter(field => !tempFields.some(e => e.id === field.id));
+      const allFields = [...previousField,...tempFields];
+
+      allFields.map(field => {
+        newPlayerPlaced = newPlayerPlaced.concat(field.players_side1).concat(field.players_side2);
+      });
+      
+      addPlayerPlaced(newPlayerPlaced);
+      updateInitial(players.filter(player => !newPlayerPlaced.includes(player.id)));
     }
     
     //create fields
@@ -95,7 +97,7 @@ export const useFields = () => {
       //initialize fields if needed
       const tempFields = reset ? arrayFields.map(e => ({...e,players_side1:[],players_side2:[]})) : [...arrayFields];
 
-      let playersFields = [...players];
+      let playersFields = [...players];      
 
       //redistribute only one
       if (arrayFields.length === 1 && (arrayFields[0].players_side1.length || arrayFields[0].players_side2.length)) {
@@ -135,7 +137,7 @@ export const useFields = () => {
         //second side
         fillHalfField(field,playersPerSide,false);
       })
-
+      
       //update playerPlaced array and initial players
       updatePlayerPlaced(tempFields);
       return tempFields;
