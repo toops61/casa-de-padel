@@ -120,7 +120,7 @@ export const useFields = () => {
         const idToAdd = playersPerSide - array.length;
         if (idToAdd && (arrayIdsInd < arrayIds.length)) {
           for (let i = 0; i < idToAdd; i++) {
-            array.push(arrayIds[arrayIdsInd]);
+            arrayIds[arrayIdsInd] && array.push(arrayIds[arrayIdsInd]);
             arrayIdsInd++;
           }
         } 
@@ -128,7 +128,8 @@ export const useFields = () => {
       
       tempFields.map(field => {
         //if only 2 players left for last field
-        const playersPerSide = (arrayIds.length - arrayIdsInd <= 2) ? 1 : 2;
+        const playersPerSide = (((arrayIds.length + field.players_side1.length + field.players_side2.length) - arrayIdsInd) <= 2) ? 1 : 2;
+        
         //first side
         fillHalfField(field,playersPerSide);
         //second side
@@ -153,7 +154,7 @@ export const useFields = () => {
       if (field) {
         const reset = (field.players_side1.length + field.players_side2.length === 4) || !initialPlayers.length ? true : false;
         const newField = fillFields([field],reset);
-        newField.length && updateField(newField[0]);
+        newField.length && updateField(newField[0]);        
       }
     }
 

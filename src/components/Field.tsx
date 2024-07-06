@@ -8,7 +8,7 @@ export default function Field({field}:{field:fieldType}) {
     const { initialPlayers } = useInitialContainer();
     const {fillOne} = useFields();
 
-    const fullField = (field.players_side1.length + field.players_side2.length) === 4 ? true : false;
+    const fullField = (field.players_side1.length + field.players_side2.length) === 4 ? true : false;    
 
   return (
     <div className="field-container">
