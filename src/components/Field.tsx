@@ -1,11 +1,12 @@
 import { Droppable } from "react-beautiful-dnd";
-import { fieldType, usePlayersZustand } from "../store";
+import { fieldType, useInitialContainer, usePlayersZustand } from "../store";
 import { useFields } from "../utils/hooks";
 import Player from "./Player";
 
 export default function Field({field}:{field:fieldType}) {
     const { players } = usePlayersZustand();
-    const {redistributeOne} = useFields();
+    const { initialPlayers } = useInitialContainer();
+    const {fillOne} = useFields();
 
     const fullField = (field.players_side1.length + field.players_side2.length) === 4 ? true : false;
 
@@ -44,9 +45,9 @@ export default function Field({field}:{field:fieldType}) {
             </Droppable>
         </div>
         <button onClick={() => {
-                redistributeOne(field.id);
+                fillOne(field.id);
             }}>
-            {!fullField ? "Remplir" : "Redistribuer"}
+            {fullField || !initialPlayers.length ? "Redistribuer" : "Remplir"}
         </button>
     </div>
   )

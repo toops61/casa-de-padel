@@ -4,7 +4,7 @@ import { IDType } from "./interfaces";
 import { getRandomArray } from "./utilFuncs";
 
 export const useFields = () => {
-    const { players,playersPlaced,addPlayerPlaced } = usePlayersZustand();
+    const { players,addPlayerPlaced } = usePlayersZustand();
     const { initialPlayers,updateInitial } = useInitialContainer();
     const { fields,addFields,updateField } = useFieldsZustand();
     const { showModal } = useModal();
@@ -13,6 +13,7 @@ export const useFields = () => {
       constructor(public id:IDType,public players_side1:IDType[],public players_side2:IDType[]) {}
     }
 
+    //update playerPlaced and initialPlayers
     const updatePlayerPlaced = (tempFields:fieldType[]) => {
       let tempInitial = [...initialPlayers];
             
@@ -25,27 +26,35 @@ export const useFields = () => {
       updateInitial(tempInitial);
     }
     
-    const createFields = (start:boolean=true) => {
-      const playersToAdd = players.length - (start ? 0 : playersPlaced.length);
-      const fieldsNumber = Math.ceil(playersToAdd/4);
-      const rest = (players.length)%4;
-      const arrayFields : fieldType[] = [];
-      if (!rest) {
-        showModal(`création ${fieldsNumber > 1 ? 'de ' : 'd\''}${fieldsNumber} terrain${fieldsNumber > 1 ? 's' : ''}`,'');
-        for (let i = 0; i < fieldsNumber; i++) {
+    //create fields
+    const createFields = () => {
+      const playersToAdd = players.length;
+      const rest = playersToAdd%4;
+      const fieldsNumber = rest > 1 ? Math.ceil(playersToAdd/4) : Math.floor(playersToAdd/4);
+      const arrayFields = [...fields];
+      const created = fieldsNumber - fields.length;
+      
+      if (created) {
+        for (let i = 0; i < created; i++) {
           const newField = new Field(nanoid(),[],[]);
           arrayFields.push(newField);
         }
         
-        return arrayFields;
-        
-      } else {
-          showModal('Attention il manque des joueurs');
+        showModal(`création ${created > 1 ? 'de ' : 'd\''}${created} terrain${created > 1 ? 's' : ''}`,'');
       }
+      
+      //return new total fields
+      return arrayFields;
+    }
+
+    //manual mode
+    const buildFields = () => {
+      const arrayFields = createFields();
+      addFields(arrayFields);
     }
 
     //fill fields with players
-    const fillFields = (arrayFields:fieldType[]) => {
+    /* const fillFields = (arrayFields:fieldType[]) => {
       let playersTemp = players.map(e => ({...e}));
 
       //fill 1 field
@@ -79,38 +88,74 @@ export const useFields = () => {
       //update playerPlaced array and initial players
       updatePlayerPlaced(tempFields);
       return tempFields;
+    } */
+    
+      //default reset
+    const fillFields = (arrayFields:fieldType[],reset:boolean=true) => {
+      //initialize fields if needed
+      const tempFields = reset ? arrayFields.map(e => ({...e,players_side1:[],players_side2:[]})) : [...arrayFields];
+
+      let playersFields = [...players];
+
+      //redistribute only one
+      if (arrayFields.length === 1 && (arrayFields[0].players_side1.length || arrayFields[0].players_side2.length)) {
+        const ids = [...arrayFields[0].players_side1].concat(arrayFields[0].players_side2);
+        playersFields = players.filter(player => ids.includes(player.id));
+      }
+
+      const playersTemp = reset ? playersFields : initialPlayers;
+      const playersToPlace = playersTemp.map(e => ({...e}));
+
+      //create random ids array from playersTemp
+      const arrayIndex = getRandomArray(playersToPlace.length);
+      const arrayIds = arrayIndex.map(e => playersToPlace[e].id);
+
+      let arrayIdsInd = 0;
+
+      //add id to half side if needed
+      const fillHalfField = (field:fieldType,playersPerSide:number,firstSide:boolean=true) => {
+        const side = firstSide ? 'players_side1' : 'players_side2';
+        const array = field[side];
+
+        const idToAdd = playersPerSide - array.length;
+        if (idToAdd && (arrayIdsInd < arrayIds.length)) {
+          for (let i = 0; i < idToAdd; i++) {
+            array.push(arrayIds[arrayIdsInd]);
+            arrayIdsInd++;
+          }
+        } 
+      }
+      
+      tempFields.map(field => {
+        //if only 2 players left for last field
+        const playersPerSide = (arrayIds.length - arrayIdsInd <= 2) ? 1 : 2;
+        //first side
+        fillHalfField(field,playersPerSide);
+        //second side
+        fillHalfField(field,playersPerSide,false);
+      })
+
+      //update playerPlaced array and initial players
+      updatePlayerPlaced(tempFields);
+      return tempFields;
     }
 
+    //mode auto
     const autoFill = () => {
       const arrayFields = createFields();
-      if (arrayFields) {
-        const fieldsFilled = fillFields(arrayFields);
-
-        //update zustand fields
-        addFields(fieldsFilled);
-      }
-    }
-
-    const buildFields = () => {
-      const arrayFields = createFields(false);
-      const previousFields = fields.filter(field => (field.players_side1.length + field.players_side1.length) === 4);
-      arrayFields && addFields([...previousFields,...arrayFields]);
-    }
-
-    const redistributeAll = () => {
-      const newFields = fillFields(fields);
-
+      const fieldsFilled = fillFields(arrayFields);
       //update zustand fields
-      addFields(newFields);
-    }
+      addFields(fieldsFilled);
+    }    
 
-    const redistributeOne = (fieldId:IDType) => {
+    const fillOne = (fieldId:IDType) => {
       const field = fields.find(e => e.id === fieldId);
       if (field) {
-        const newField = fillFields([field]);
+        const reset = (field.players_side1.length + field.players_side2.length === 4) || !initialPlayers.length ? true : false;
+        const newField = fillFields([field],reset);
         newField.length && updateField(newField[0]);
       }
     }
 
-    return {autoFill,redistributeAll,redistributeOne,buildFields};
+    return {autoFill,fillOne,buildFields};
 }

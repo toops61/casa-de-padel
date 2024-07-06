@@ -3,7 +3,7 @@ import { useFields } from "../utils/hooks";
 import Field from "./Field";
 
 export default function FieldsPart() {
-  const {autoFill,redistributeAll,buildFields} = useFields();
+  const {autoFill,buildFields} = useFields();
 
   const { fields } = useFieldsZustand();
   const { initialPlayers } = useInitialContainer();
@@ -15,7 +15,7 @@ export default function FieldsPart() {
           <h3>Créer les équipes</h3>
           <button className="color-button" onClick={autoFill}>auto</button>
           <button className="color-button" onClick={buildFields}>Manuel</button>
-        </> : (fields.length > 1 ? <button className="color-button" onClick={redistributeAll}>Redistribuer les terrains</button> : <></>)}
+        </> : (fields.length > 1 ? <button className="color-button" onClick={autoFill}>Redistribuer les terrains</button> : <></>)}
       </div>
       <div className="fields-container">
         {fields.map(field => <Field key={field.id} field={field} />)}
