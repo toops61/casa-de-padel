@@ -14,9 +14,9 @@ export default function Field({field}:{field:fieldType}) {
     <div className="field-container">
         <div className="field">
             <Droppable droppableId={field.id.toString()+'first'} direction="horizontal">
-                {(provided) => (
+                {(provided,snapshot) => (
                     <div 
-                        className="part"
+                        className={"part" + (snapshot.isDraggingOver ? " dragging-over" : "")}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
@@ -29,9 +29,9 @@ export default function Field({field}:{field:fieldType}) {
                 )}
             </Droppable>
             <Droppable droppableId={field.id.toString()+'second'} direction="horizontal">
-                {(provided) => (
+                {(provided,snapshot) => (
                     <div 
-                        className="part"
+                        className={"part" + (snapshot.isDraggingOver ? " dragging-over" : "")}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >

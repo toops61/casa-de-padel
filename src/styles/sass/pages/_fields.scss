@@ -26,17 +26,22 @@
     @include flexColumn;
     margin-bottom: 1em;
     border-radius: .5em;
-    border: solid $green-field;
+    border: solid $field-border;
+    overflow: hidden;
     .part {
         width: 12em;
         height: 10em;
         display: flex;
         justify-content: space-around;
         &:first-child {
-            border-bottom: solid $green-field;
+            border-bottom: solid $field-border;
+        }
+        &.dragging-over{
+            background-color: $dropzone;
         }
     }
     .player-container {
+        height: fit-content;
         margin: 1.6em 0;
         min-width: 5em;
         display: flex;

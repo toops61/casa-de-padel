@@ -20,16 +20,25 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-
+    &.dragging-over {
+        background-color: $dropzone;
+    }
 }
 
 .player-container {
-    margin: .5em 1em;
+    margin: .5em;
     @include flexColumn;
     min-width: 5em;
-    .icon::before {
-        @include icon('\f007',2em);
-        color: $orange-seipra;
+    .icon {
+        &::before {
+            @include icon('\f007',2em);
+            color: $orange-seipra;
+        }
+        &.dragging::before {
+            color: $dragged;
+
+        }
     }
+    
 }
 
