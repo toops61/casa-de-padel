@@ -2,7 +2,6 @@ export const playersData = [
     "Ayyoub",
     "Vincent",
     "Nicolas L",
-    "Emelyne",
     "Charles Henri",
     "Nada",
     "Emeline",
