@@ -19,10 +19,7 @@ export default function PlayersIcons() {
 
   return (
     <Droppable droppableId="initial" direction="horizontal">
-      {((provided,snapshot) => {
-        console.log(provided.placeholder);
-        
-        return (
+      {((provided,snapshot) => (
           <div 
             className={"players-container" + (snapshot.isDraggingOver ? " dragging-over" : "")}
             ref={provided.innerRef}
@@ -32,8 +29,7 @@ export default function PlayersIcons() {
               {initialPlayers.map((player,index) => <Player player={player} index={index} key={player.id} />)}
               {provided.placeholder}
           </div>
-        )
-      })}
+      ))}
     </Droppable>
   )
 }
